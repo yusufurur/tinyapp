@@ -11,6 +11,8 @@ const urlDatabase = {
 "9sm5xK": "http://www.google.com"
 };
 
+function generateRandomString() {}
+
 app.get("/urls", (req, res) => {
 const templateVars = { urls: urlDatabase };
 res.render("urls_index", templateVars);
@@ -39,6 +41,11 @@ res.send("<html><body>Hello <b>World</b></body></html>\n");
 
 app.listen(PORT, () => {
 console.log(`Example app listening on port ${PORT}!`);
+});
+
+app.get("/u/:id", (req, res) => {
+ const longURL = urlDatabase[req.params.id]
+  res.redirect(longURL);
 });
 
 app.post("/urls", (req, res) => {
