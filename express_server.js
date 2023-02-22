@@ -11,7 +11,15 @@ const urlDatabase = {
 "9sm5xK": "http://www.google.com"
 };
 
-function generateRandomString() {}
+function generateRandomString() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+let result = '';
+for (let i = 0; i < 6; i++) {
+  result += chars.charAt(Math.floor(Math.random() * chars.length));
+}
+return result;
+
+}
 
 app.get("/urls", (req, res) => {
 const templateVars = { urls: urlDatabase };
@@ -48,12 +56,27 @@ app.listen(PORT, () => {
 console.log(`Example app listening on port ${PORT}!`);
 });
 
-app.get("/u/:id", (req, res) => {
+app.get("/urls/:id", (req, res) => {
  const longURL = urlDatabase[req.params.id]
   res.redirect(longURL);
 });
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const urlId = generateRandomString();
+  urlDatabase[urlId] = req.body.longURL
+  res.redirect("/urls");
 });
+
+app.post('/urls/:id', (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL
+  res.redirect("/urls");
+  })
+
+  app.post("/urls/:id/edit", (req, res) => {
+    res.redirect(`/urls/${req.params.id}`);
+    });
+// app.post("/urls", (req, res) => {
+//   console.log(req.body); // Log the POST request body to the console
+// //   res.send("Ok"); // Respond with 'Ok' (we will replace this)
+// // });
