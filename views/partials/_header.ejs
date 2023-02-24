@@ -9,22 +9,15 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
+        <a class="nav-item nav-link" href="/login">Login</a>
       </div>
-      <!-- <form class="form-inline my-2 my-lg-0" method="POST" action="/login">
-        <input class="form-control mr-sm-2" type="text" placeholder="Username" name="username">
-        <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Login</button> -->
-        <% if(username){ %>
-          <form action='/logout' method="post">
-            <label form="name"> Logged In As :<%= username %></label>
-            <button type="submit"> Logout </button>
-            </form>
-            <% } else{ %>
-              <form action='/login' method="post">
-                <input type="text" name="username" id="username">
-                <button type="submit"> Login </button>
-                <% } %>
-            </form>
-      </form>
+      <% if(user){ %>
+        <form action='/logout' method="post">
+          <label form="name"> Logged In As :<%= user.email %></label>
+          <button type="submit"> Logout </button>
+        </form>
+        <% } %>
     </div>
   </nav>
 </header>
