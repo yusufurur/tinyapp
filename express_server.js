@@ -1,12 +1,5 @@
 const cookieParser = require("cookie-parser");
 const express = require("express");
-// const {
-//   authenticateUser,
-//   getUserByEmail,
-//   createUser,
-//   sayBob,
-//   updatePassword
-// } = require("./users");
 
 const app = express();
 app.use(cookieParser());
@@ -46,7 +39,7 @@ function generateRandomString() {
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"]
+    user: req.cookies["username"]
   };
   res.render("urls_new", templateVars);
 });
@@ -95,13 +88,77 @@ app.post('/u/:id', (req, res) => {
 })
 
 app.get("/urls/:id/edit", (req, res) => {
-  res.redirect(`/urls/${req.params.id}`);
+  res.render(`/urls_show${req.params.id}`);
 });
 
-app.post('/login', (req, res) => {
-  const cookie = req.body.username
-  res.cookie("user_id", cookie);
+
+
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = findUserByEmail(email, users);
+  if (!user) {
+    res.status(403).send("Invalid email or password");
+  } else if (user.password !== password) {
+    res.status(403).send("Invalid email or password");
+  } else {
+    res.cookie("user_id", user.id);
+    res.redirect("/urls");
+  }
+});
+
+// come back to this you can still register with the same email
+
+app.post('/register', (req, res) => {
+  // error handling
+  if (!req.body.email || !req.body.password) {
+    console.log("#1");
+    res.status(400);
+    res.send("Please enter a valid email & password");
+    return;
+  }
+  if (authenticateUser(users, req.body.email) !== false) {
+    res.status(400);
+    res.send("Email already exists, please log in");
+    return;
+  }
+  // initialize user objs
+  const userID = generateRandomString();
+  users[userID] = {
+    id: userID,
+    email: req.body.email,
+    password: req.body.password
+  }
+
+  console.log(users);
+  //cookie time
+  res.cookie('user_id', userID);
   res.redirect('/urls');
+})
+
+function authenticateUser(users, email, password) {
+  for (let userID in users) {
+    const user = users[userID];
+    if (user.email === email && user.password === password) {
+      return user;
+    }
+  }
+  return false;
+}
+
+function findUserByEmail(email, users) {
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null; // user not found
+}
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('user_id');
+  res.redirect('/login');
 });
 
 app.get("/urls", (req, res) => {
@@ -115,8 +172,7 @@ app.get("/urls", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
-  res.redirect('/urls');
-  res.redirect("/urls");
+  res.render("/urls");
 })
 
 app.get("/register", (req, res) => {
@@ -127,24 +183,6 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 })
 
-app.post("/register", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  const user_id = generateRandomString();
-  const user = {
-    id: user_id,
-    email: req.body.email,
-    password: req.body.password
-  }
-  users[user_id] = user;
-  console.log(users);
-
-  if (req.body.email === "" | req.body.password === "") {
-    res.status(400).send("400 Bad Request ")
-  } else {
-    res.cookie("user_id", userId);
-    res.redirect('/urls');
-  }
-});
 
 app.get("/login", (req, res) => {
   const templateVars = {
@@ -153,89 +191,3 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // app.get("/register", (req, res) => {
-// //   const templateVars = { 
-// //   username: req.cookies["username"]
-// //   };
-// //   res.cookie("user_id", newUserID);
-// //   res.render("/urls",templateVars);
-// // });
-
-// app.post("/register", (req, res) => {
-//   const { email, password } = req.body;
-//   const id = generateRandomString();
-
-//   const newUser = {
-//     id,
-//     email,
-//     password: bcrypt.hashSync(password, 10)
-//   };
-
-//   users[id] = newUser;
-
-//   res.cookie("user_id", id);
-//   res.redirect("/urls");
-// });
-
-// // app.post("/register", (req, res) => {
-// //   const newUserID = generateRandomString();
-// //   const email = req.body.email
-// //   const password = req.body.password;
-// //   const user = {
-// //     id : newUserID,
-// //     email : email,
-// //     password : password
-// //   }; 
-// //   users[newUserID] = user;
-// //   console.log(users);
-
-// //   if (user.email === "" | user.password === ""){
-// //     res.send("400 Bad Request ")
-// //   }
-// //   res.cookie("user_id", newUserID);
-// //   res.redirect("/urls");         
-// // });
