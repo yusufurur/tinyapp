@@ -19,10 +19,11 @@ function authenticateUser(email, users) {
 }
 
 function findUserByEmail(email, users) {
-  for (const userId in users) {
-    const user = users[userId];
-    if (user.email === email) {
-      return user.id;
+  for (let userId in users) {
+    // console.log(user);
+    if (users[userId].email === email) {
+      console.log(users[userId]);
+      return users[userId];
     }
   }
   return null; // user not found

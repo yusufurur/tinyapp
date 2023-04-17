@@ -31,7 +31,7 @@ const urlDatabase = {
 describe('findUserByEmail', function () {
   it('should return a user with valid email', function () {
     const user = findUserByEmail("user@example.com", testUsers);
-    const expectedOutput = "userRandomID";
+    const expectedOutput = testUsers["userRandomID"];
 
     assert.equal(user, expectedOutput);
   });

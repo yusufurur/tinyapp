@@ -28,16 +28,16 @@ const urlDatabase = {
 };
 
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "lighthouse123"
+  "6e0abj": {
+    id: "6e0abj",
+    email: "testone@gmail.com",
+    password: "$2a$10$rejKRGWIZdqnezjr5Xo4ZeAHKueb6Av85MUCz/25LFa//tRirPi.u"
+  }, 
+  nts63p: {
+    id: 'nts63p',
+    email: 'a@a.com',
+    password: '$2a$10$MK6RIZqvjQKzs4X5f/CxW.QRWKWJQQhys30PIy6DYaESxqJ2hFp96'
   },
-  "user2RandomID": {
-    id: "userRandomID2",
-    email: "user2@example.com",
-    password: "lighthouselabs2023"
-  }
 }
 
 // landing page
@@ -154,11 +154,16 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  // console.log("Email: " + email);
+  // console.log("Password: " + password);
   const user = findUserByEmail(email, users);
+  // console.log("User: " + user.email);
+  // return res.send("hello login")
   if (!user) {
-    res.status(403).send("Invalid email or password");
-  } if (!bcrypt.compareSync(password, user.password)) {
-    res.status(403).send("Invalid password");
+    return res.status(403).send("Invalid email or password");
+  }
+   if (!bcrypt.compareSync(password, user.password)) {
+    return res.status(403).send("Invalid password");
   } else {
     req.session.user_id = user.id;
     res.redirect("/urls");
@@ -203,7 +208,7 @@ app.post('/register', (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 10)
   }
-
+  console.log("users", users);
   req.session.user_id = userID;
   res.redirect('/urls');
 })
